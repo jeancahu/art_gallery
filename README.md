@@ -1,5 +1,5 @@
 # Art Gallery
 
-    Django backend
-    Nginx web server
-    Spatial by [TEMPLATED](https://templated.co/)
+Django backend<br>
+Nginx web server<br>
+Spatial by [TEMPLATED](https://templated.co)<br>
