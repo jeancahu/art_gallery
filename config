@@ -61,7 +61,7 @@ WantedBy=multi-user.target
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-root $PWD/${_ws_dir};
+root $PWD;
 }
 
     location / {
