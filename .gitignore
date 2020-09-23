@@ -1,3 +1,7 @@
+# Config temporal files
+web-artgallery.nginx-config
+gunicornartgallery.service
+
 # Byte-compiled / optimized / DLL files
 __init__*
 __pycache__/

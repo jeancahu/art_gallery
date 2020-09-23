@@ -15,13 +15,20 @@ eval "$( sed 's|[\t=]| |;s| * |="|;s|^.|declare -r &|;s|.$|&"|' ./server.cfg )"
 if [[ "$1" == 'install' ]]
 then
     set -e
-    cp gnicorn.service /etc/systemd/system/gunicorn${_ws_dir}.service
+    echo "It stops NGINX"
+    systemctl stop nginx
+
+    echo "Copy System-D files and NGINX files"
+    cp gunicorn${_ws_dir}.service /etc/systemd/system/gunicorn${_ws_dir}.service
     cp web-${_ws_dir}.nginx-config /etc/nginx/sites-available/web-${_ws_dir}
 
-    # Probar la configuración
+    # Test configuration
+    echo "Test configuration and enable the site"
     nginx -t
     ln -s /etc/nginx/sites-available/web-${_ws_dir} /etc/nginx/sites-enabled
 
+    # Enable the service
+    echo "Enable the service and start both services, Gunicorn and NGINX"
     systemctl enable gunicorn${_ws_dir}.service
     systemctl start gunicorn${_ws_dir}.service
 
@@ -41,8 +48,8 @@ After=network.target
 [Service]
 User=$USER
 Group=www-data
-WorkingDirectory=$PWD/${_ws_dir}
-ExecStart=$VIRTUAL_ENV/bin/gunicorn${_ws_dir} --access-logfile - --workers 3 --bind unix:$PWD/web-${_ws_dir}.sock ${_ws_dir}.wsgi:application
+WorkingDirectory=$PWD
+ExecStart=$VIRTUAL_ENV/bin/gunicorn --access-logfile - --workers 3 --bind unix:$PWD/web-${_ws_dir}.sock ${_ws_dir}.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
