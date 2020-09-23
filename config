@@ -8,19 +8,22 @@ then
     exit 1
 fi
 
+## Get configuration constants from file
+eval "$( sed 's|[\t=]| |;s| * |="|;s|^.|declare -r &|;s|.$|&"|' ./server.cfg )"
+
 # Configuración de riesgo, introduce varios ficheros al sistema
 if [[ "$1" == 'install' ]]
 then
     set -e
-    cp gnicorn.service /etc/systemd/system/gunicorn.service
-    cp web-buses.nginx-config /etc/nginx/sites-available/web-buses
+    cp gnicorn.service /etc/systemd/system/gunicorn${_ws_dir}.service
+    cp web-${_ws_dir}.nginx-config /etc/nginx/sites-available/web-${_ws_dir}
 
     # Probar la configuración
     nginx -t
-    ln -s /etc/nginx/sites-available/web-buses /etc/nginx/sites-enabled
+    ln -s /etc/nginx/sites-available/web-${_ws_dir} /etc/nginx/sites-enabled
 
-    systemctl enable gunicorn.service
-    systemctl start gunicorn.service
+    systemctl enable gunicorn${_ws_dir}.service
+    systemctl start gunicorn${_ws_dir}.service
 
     systemctl start nginx
 fi
@@ -32,34 +35,34 @@ then
     ./bash/dependencias.sh # Instalar Django y complementos
 
     echo "[Unit]
-Description=Gunicorn daemon server:$PWD
+Description=Gunicorn daemon server:$PWD $_ws_descp
 After=network.target
 
 [Service]
 User=$USER
 Group=www-data
-WorkingDirectory=$PWD/buses
-ExecStart=$VIRTUAL_ENV/bin/gunicorn --access-logfile - --workers 3 --bind unix:$PWD/web-buses.sock buses.wsgi:application
+WorkingDirectory=$PWD/${_ws_dir}
+ExecStart=$VIRTUAL_ENV/bin/gunicorn${_ws_dir} --access-logfile - --workers 3 --bind unix:$PWD/web-${_ws_dir}.sock ${_ws_dir}.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
-" > gunicorn.service
+" > gunicorn${_ws_dir}.service
 
     echo "server {
-    listen 80;
-    server_name 161.35.54.122;
+    listen $_ws_port;
+    server_name $_ws_ip;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-root $PWD/buses;
+root $PWD/${_ws_dir};
 }
 
     location / {
 include proxy_params;
-        proxy_pass http://unix:$PWD/web-buses.sock;
+        proxy_pass http://unix:$PWD/web-${_ws_dir}.sock;
 }
 
-}" > web-buses.nginx-config
+}" > web-${_ws_dir}.nginx-config
 
 elif [ "$VIRTUAL_ENV" ] && [ $USER == 'root' ]
 then
