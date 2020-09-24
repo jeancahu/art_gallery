@@ -61,31 +61,20 @@
 						</header>
 						<div class="feature-grid">
 
+                {% for collection in collections %}
 							  <div class="feature">
-                    <a href='/collection/1'>
-								        <div class="image rounded"><img src="/template/images/pic04.jpg" alt="" /></div>
+                    <a href='/collection/{{ collection.id }}'>
+								        <div class="image rounded"><img src="{{ collection.banner_url }}" alt="" /></div>
                         </a>
 								<div class="content">
 									<header>
-										<h4>Pintura</h4>
-										<p>Lorem ipsum dolor sit</p>
+										<h4>{{ collection.name }}</h4>
+										<p>Lorem ipsum dolor sit FIXME{{ collection.category }}</p>
 									</header>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore esse tenetur accusantium porro omnis, unde mollitia totam sit nesciunt consectetur.</p>
+									<p>{{ collection.description }}</p>
 								</div>
-							</div>
-
-              <div class="feature">
-                  <a href='/collection/2'>
-								      <div class="image rounded"><img src="/template/images/pic05.jpg" alt="" /></div>
-                      </a>
-								<div class="content">
-									<header>
-										  <h4>Bijouterie</h4>
-										<p>Ratione maiores a, commodi</p>
-									</header>
-									<p>Animi mollitia optio culpa expedita. Dolorem alias minima culpa repellat. Dolores, fuga maiores ut obcaecati blanditiis, at aperiam doloremque.</p>
-								</div>
-							</div>
+							  </div>
+                {% endfor %}
 
 						</div>
 					</div>

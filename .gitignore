@@ -1,6 +1,7 @@
 # Config temporal files
 web-artgallery.nginx-config
 gunicornartgallery.service
+*migrations*
 
 # Byte-compiled / optimized / DLL files
 __init__*
