@@ -9,7 +9,8 @@ then
 fi
 
 ## Get configuration constants from file
-eval "$( sed 's|[\t=]| |;s| * |="|;s|^.|declare -r &|;s|.$|&"|' ./server.cfg )"
+eval "$( sed 's|[\t=]| |;s| * |="|;s|^.|declare &|;s|.$|&"|' ./server.cfg )"
+_ws_static=$( sed 's|^//*||;s|/*/$||' <<< "$_ws_static" )
 
 # Configuración de riesgo, introduce varios ficheros al sistema
 if [[ "$1" == 'install' ]]
@@ -60,7 +61,7 @@ WantedBy=multi-user.target
     server_name $_ws_ip;
 
     location = /favicon.ico { access_log off; log_not_found off; }
-    location /static/ {
+    location /$_ws_static/ {
 root $PWD;
 }
 

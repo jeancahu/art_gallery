@@ -28,4 +28,5 @@ urlpatterns = [
     path('about/author/', include('author.urls')),
 ]
 
+# Static files are handled only in debug mode
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

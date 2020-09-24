@@ -22,7 +22,8 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '&5x*v%5+^%3nfm7)&%%xgwgr)=ytg_gd(a3!v)^p6*m3684e+m' # FIXME: chg in production server
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["192.168.0.4", "localhost"]
 
@@ -123,5 +124,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/template/'
-# STATICFILES_DIRS = path.join(BASE_DIR, 'template') # FIXME: needs non tuple
-STATICFILES_DIRS = (path.join(BASE_DIR, 'template'),)
+STATICFILES_DIRS = path.join(BASE_DIR, 'template') # FIXME: gunicorn needs non tuple
+# STATICFILES_DIRS = (path.join(BASE_DIR, 'template'),) # runserver needs this one
