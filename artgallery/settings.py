@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'contact.apps.ContactConfig',
     'main.apps.MainConfig',
     'collection.apps.CollectionConfig',
+    'artwork.apps.ArtworkConfig',
+    'author.apps.AuthorConfig',
+    'about.apps.AboutConfig',
 ]
 
 MIDDLEWARE = [

@@ -23,6 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('contact/', include('contact.urls')),
     path('collection/', include('collection.urls')),
+    path('collection/', include('artwork.urls')),
+    path('about/', include('about.urls')),
+    path('about/author/', include('author.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
