@@ -1,10 +1,20 @@
 from django.shortcuts import render
+from .models import Collection
+from artwork.models import Artwork
 
-# Create your views here.
 def collection(request, coll_numb):
-    print(coll_numb)
+
+    collection = Collection.objects.get(id=coll_numb)
+
+    print(collection.name)
+
+    artworks = Artwork.objects.filter(collection=collection.name)
+
+    print(artworks)
+
     context = {
-        'number': coll_numb,
+        'collection': collection,
+        'artworks': artworks,
     }
 
     return render(request, "collection.html", context)

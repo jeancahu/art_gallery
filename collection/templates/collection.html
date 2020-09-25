@@ -7,8 +7,8 @@
     <div class="container">
 
         <header class="major special">
-            <h2>Título de la colección número {{ number }}</h2>
-            <p>Frase característica</p>
+            <h2>{{ collection.name }}</h2>
+            <p>{{ collection.id }} FIXME</p>
         </header>
 
         <a href="#" class="image fit"><img src="/template/images/pic01.jpg" alt="" /></a>
@@ -25,16 +25,9 @@
          <h4>Fit</h4> -->
     <div class="box alt">
         <div class="row 50% uniform">
-            <!-- <div class="12u$"><span class="image fit"><img src="/template/images/pic01.jpg" alt="" /></span></div> -->
-            <div class="4u"><span class="image fit"><img src="/template/images/pic02.jpg" alt="" /></span></div>
-            <div class="4u"><span class="image fit"><img src="/template/images/pic03.jpg" alt="" /></span></div>
-            <div class="4u$"><span class="image fit"><img src="/template/images/pic02.jpg" alt="" /></span></div>
-            <div class="4u"><span class="image fit"><img src="/template/images/pic03.jpg" alt="" /></span></div>
-            <div class="4u"><span class="image fit"><img src="/template/images/pic02.jpg" alt="" /></span></div>
-            <div class="4u$"><span class="image fit"><img src="/template/images/pic03.jpg" alt="" /></span></div>
-            <div class="4u"><span class="image fit"><img src="/template/images/pic02.jpg" alt="" /></span></div>
-            <div class="4u"><span class="image fit"><img src="/template/images/pic03.jpg" alt="" /></span></div>
-            <div class="4u$"><span class="image fit"><img src="/template/images/pic02.jpg" alt="" /></span></div>
+            {% for artwork in artworks %}
+            <div class="4u"><span class="image fit"><img src="{{ artwork.img_url }}" alt="" /></span></div>
+            {% endfor %}
         </div>
     </div>
 
