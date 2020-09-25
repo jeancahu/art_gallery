@@ -59,7 +59,7 @@ WantedBy=multi-user.target
     echo "server {
     listen $_ws_port;
     server_name $_ws_ip;
-
+    error_page 404 /template/404.html;
     location = /favicon.ico { access_log off; log_not_found off; }
     location /$_ws_static/ {
         root $PWD;

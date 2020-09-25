@@ -2,6 +2,7 @@
 web-artgallery.nginx-config
 gunicornartgallery.service
 *migrations*
+media/*/
 
 # Byte-compiled / optimized / DLL files
 __init__*
