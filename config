@@ -62,14 +62,15 @@ WantedBy=multi-user.target
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /$_ws_static/ {
-root $PWD;
-}
-
+        root $PWD;
+    }
+    location /$_ws_media/ {
+        root $PWD;
+    }
     location / {
-include proxy_params;
+        include proxy_params;
         proxy_pass http://unix:$PWD/web-${_ws_dir}.sock;
-}
-
+    }
 }" > web-${_ws_dir}.nginx-config
 
 elif [ "$VIRTUAL_ENV" ] && [ $USER == 'root' ]
