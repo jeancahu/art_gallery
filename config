@@ -24,7 +24,11 @@ then
     cp web-${_ws_dir}.nginx-config /etc/nginx/sites-available/web-${_ws_dir}
 
     # Test configuration
-    echo "Test configuration and enable the site"
+    echo "Test configuration and enable the site, enable image filter module"
+
+    # Next module already on server by default
+    #echo 'load_module modules/ngx_http_image_filter_module.so' > /etc/nginx/modules-enabled/${_ws_dir}.conf
+
     nginx -t
     ln -s /etc/nginx/sites-available/web-${_ws_dir} /etc/nginx/sites-enabled
 
@@ -56,11 +60,20 @@ ExecStart=$VIRTUAL_ENV/bin/gunicorn --access-logfile - --workers 3 --bind unix:$
 WantedBy=multi-user.target
 " > gunicorn${_ws_dir}.service
 
-    echo "server {
+# NGINX config file, resize server and main server
+cat > web-${_ws_dir}.nginx-config <<EOF
+proxy_cache_path $PWD/imgcache levels=1 keys_zone=resized:1m max_size=256m;
+
+server {
     listen $_ws_port;
     server_name $_ws_ip;
-    error_page 404 /template/404.html;
+    error_page 404 /$_ws_static/404.html;
     location = /favicon.ico { access_log off; log_not_found off; }
+    location ~ ${_ws_media_regex} {
+    proxy_pass http://127.0.0.1:${_ws_media_port};
+        proxy_cache       resized;
+        proxy_cache_valid 180m;
+    }
     location /$_ws_static/ {
         root $PWD;
     }
@@ -71,7 +84,24 @@ WantedBy=multi-user.target
         include proxy_params;
         proxy_pass http://unix:$PWD/web-${_ws_dir}.sock;
     }
-}" > web-${_ws_dir}.nginx-config
+}
+
+limit_req_zone "1" zone=2persec:32k rate=2r/s;
+
+# Image resize server
+server {
+    listen $_ws_media_port;
+    allow 127.0.0.1;
+    deny all;
+    limit_req zone=2persec burst=10;
+
+    location ~ ${_ws_media_regex} {
+       alias $PWD/${_ws_media}/\$2;
+       image_filter_buffer 10M;
+       image_filter resize \$1 -;
+    }
+}
+EOF
 
 elif [ "$VIRTUAL_ENV" ] && [ $USER == 'root' ]
 then
@@ -90,6 +120,8 @@ then
 
          # Instalar el web-service
          apt install -y nginx
+         # apt install -y libnginx-mod-http-image-filter # Already on server by default
+
          systemctl stop nginx.service
      }
 

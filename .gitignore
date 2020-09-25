@@ -4,6 +4,9 @@ gunicornartgallery.service
 *migrations*
 media/*/
 
+# Emacs temporals
+*~
+
 # Byte-compiled / optimized / DLL files
 __init__*
 __pycache__/
