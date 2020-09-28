@@ -1,18 +1,31 @@
 #!/bin/bash
-## Configuración básica para montar el sitio en un servidor Ubuntu 18.04, DigitalOcean
+## Basic configuration on Ubuntu 18.04, DigitalOcean generic server
 
 if [[ "$( dirname $0 )" != '.' ]]
 then
-    echo "Ejecute este script en la raíz del proyecto con:
+    echo "Execute $0 script on project root directory:
          ./config"
     exit 1
+fi
+
+if [ "$1" == 'help' ]
+then
+    echo "Instructions:
+    $0            configure and install dependencies
+    $0 help       shows this message
+    $0 install    moves system configurations files to /etc/, it requires root privileges
+    $0 clean      deletes temporal files on project root directory
+    $0 uninstall  does stop, disable services and delete the configuration files
+                  placed on system by installation routine
+"
+    exit 0
 fi
 
 ## Get configuration constants from file
 eval "$( sed 's|[\t=]| |;s| * |="|;s|^.|declare &|;s|.$|&"|' ./server.cfg )"
 _ws_static=$( sed 's|^//*||;s|/*/$||' <<< "$_ws_static" )
 
-# Configuración de riesgo, introduce varios ficheros al sistema
+# Risky configuration, it requires root privileges and places files on system
 if [[ "$1" == 'install' ]]
 then
     set -e
@@ -38,13 +51,42 @@ then
     systemctl start gunicorn${_ws_dir}.service
 
     systemctl start nginx
+    exit 0
 fi
 
-# Configuración sin riesgo, no introduce ficheros en el sistema por parte del proyecto
+if [[ "$1" == 'uninstall' ]]
+then
+    set -e
+    systemctl stop nginx
+    systemctl stop gunicorn${_ws_dir}.service
+    systemctl disable gunicorn${_ws_dir}.service
+
+    echo "rm /etc/nginx/sites-enabled/web-${_ws_dir}"
+    rm /etc/nginx/sites-enabled/web-${_ws_dir}
+
+    echo "rm /etc/nginx/sites-available/web-${_ws_dir}"
+    rm /etc/nginx/sites-available/web-${_ws_dir}
+
+    echo "rm /etc/systemd/system/gunicorn${_ws_dir}.service"
+    rm /etc/systemd/system/gunicorn${_ws_dir}.service
+
+    systemctl start nginx
+    exit 0
+fi
+
+if [[ "$1" == 'clean' ]]
+then
+    set -e
+    rm ./gunicorn${_ws_dir}.service
+    rm ./web-${_ws_dir}.nginx-config
+    exit 0
+fi
+
+# Riskless configuration, it doesn't ingress files on system, local files placing
 if [ "$VIRTUAL_ENV" ] && [ $USER != 'root' ]
 then
-    # Configuración dentro del ambiente virtual de Python3
-    ./bash/dependencias.sh # Instalar Django y complementos
+    # Inner configuration for Python3 virtual enviroment
+    ./bash/dependencias.sh # Install Django and its complements
 
     echo "[Unit]
 Description=Gunicorn daemon server:$PWD $_ws_descp
@@ -106,7 +148,7 @@ EOF
 elif [ "$VIRTUAL_ENV" ] && [ $USER == 'root' ]
 then
     echo "No ejecute este script con SUDO dentro del ambiente virtual"
-
+    exit 1
 elif [[ $USER == 'root' ]] && [ "0$VIRTUAL_ENV" == '0' ]
 then
      # Instalar las dependencias del sistema:
